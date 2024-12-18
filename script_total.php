@@ -8,7 +8,11 @@
   $raison_sociale = $argv[2];
   $siret = $argv[3];
   $cdp = $argv[4];
-  $csvPath = $argv[5];
+  $csvPath = $argv[5] . '/export_total.csv';
+  $dirname = dirname($csvPath);
+  if (!is_dir($dirname)) {
+    mkdir($dirname, 0755, true);
+  }
 
   $header = ["Culture", "Raison Sociale", "SIRET", "CDP", "Surface (Ha)", "Semences", "Biocontrôle", "Herbicides", "Insecticides acaricides", "Fongicides bactéricides", "Autres", "Total"];
 

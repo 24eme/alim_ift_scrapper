@@ -1,6 +1,6 @@
 #!/bin/bash
 
-if (( $# != 6 )); then
+if (( $# != 5 )); then
   >&2 echo "./export.sh <clé> <raison sociale> <siret> <cdp> <dossier_output>"
   exit 2
 fi
@@ -11,7 +11,7 @@ SIRET=$3
 CDP=$4
 DIR_OUTPUT=$5
 
-DIRNAME_TMP_IFT=/tmp/export_ift
+DIRNAME_TMP_IFT=/tmp/json_ift
 
 JSON_FILE=$DIRNAME_TMP_IFT/$(date +%Y%m%d%H%M%S)"_"$CDP".json"
 

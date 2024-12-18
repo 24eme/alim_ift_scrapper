@@ -8,14 +8,18 @@
   $raison_sociale = $argv[2];
   $siret = $argv[3];
   $cdp = $argv[4];
-  $csvPath = $argv[5];
+  $csvPath = $argv[5] . '/export_ift.csv';
+  $dirname = dirname($csvPath);
+  if (!is_dir($dirname)) {
+    mkdir($dirname, 0755, true);
+  }
 
   $header = ["Raison Sociale", "SIRET", "CDP", "Surface vigne (HA)", "Nom parcelle", "Surface parcelle", "Date traitement", "Culture", "Produit", "Numéro AMM", "Cible", "Dose Appliquée", "Dose de référence", "Pourcentage traité", "Volume de bouillie", "IFT", "Segment", "Observation"];
 
   $addHeader = !file_exists($csvPath);
   $csvOutput = fopen($csvPath, 'a');
   if (! $csvOutput) {
-    echo "Erreur à la création du fichier " . $csvPath;
+    echo "Erreur à la création du fichier " . $csvPath . ' ';
     exit;
   }
 
