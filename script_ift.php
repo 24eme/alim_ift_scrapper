@@ -1,20 +1,17 @@
 <?php
-  if ($argc != 6) {
-    echo "php script_application.php <doc_json> <raison_sociale> <SIRET> <CDP> <chemin_fichier_export>";
-    exit;
-  }
 
   $bilanParcelles = json_decode(file_get_contents($argv[1]), true);
-  $raison_sociale = $argv[2];
+  $csvPath = $argv[2] . '/export_ift.csv';
   $siret = $argv[3];
-  $cdp = $argv[4];
-  $csvPath = $argv[5] . '/export_ift.csv';
+  $cvi = $argv[4];
+  $cdp = $argv[5];
+  $raison_sociale = $argv[6];
   $dirname = dirname($csvPath);
   if (!is_dir($dirname)) {
     mkdir($dirname, 0755, true);
   }
 
-  $header = ["Raison Sociale", "SIRET", "CDP", "Surface vigne (HA)", "Nom parcelle", "Surface parcelle", "Date traitement", "Culture", "Produit", "Numéro AMM", "Cible", "Dose Appliquée", "Dose de référence", "Pourcentage traité", "Volume de bouillie", "IFT", "Segment", "Observation"];
+  $header = ["Raison Sociale", "SIRET", "CVI", "CDP", "Surface vigne (HA)", "Nom parcelle", "Surface parcelle", "Date traitement", "Culture", "Produit", "Numéro AMM", "Cible", "Dose Appliquée", "Dose de référence", "Pourcentage traité", "Volume de bouillie", "IFT", "Segment", "Observation"];
 
   $addHeader = !file_exists($csvPath);
   $csvOutput = fopen($csvPath, 'a');
@@ -42,7 +39,7 @@
     foreach ($parcelle['traitements'] as $traitement) {
       fputcsv($csvOutput,
       [
-        $raison_sociale, $siret, $cdp, $surface_vigne,
+        $raison_sociale, $siret, $cvi, $cdp, $surface_vigne,
         $parcelle['parcelle']['nom'],
         str_replace('.', ',', $parcelle['parcelle']['surface']),
         $traitement["dateTraitement"], $traitement["culture"]["libelle"],
@@ -52,7 +49,8 @@
         str_replace('.', ',', $traitement["facteurDeCorrection"]),
         "-",
         str_replace('.', ',', $traitement["ift"]),
-        $traitement["segment"]["libelle"], "-"
+        $traitement["segment"]["libelle"],
+        $traitement["avertissement"]["libelle"]
       ], ';');
     }
   }
