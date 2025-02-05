@@ -1,17 +1,18 @@
 <?php
 
   $bilanGroupes = json_decode(file_get_contents($argv[1]), true);
-  $csvPath = $argv[2] . '/export_total.csv';
-  $siret = $argv[3];
-  $cvi = $argv[4];
-  $cdp = $argv[5];
-  $raison_sociale = $argv[6];
+  $csvPath ='./export_total.csv';
+  $siret = $argv[2];
+  $cvi = $argv[3];
+  $cdp = $argv[4];
+  $raison_sociale = $argv[5];
+  $fichier = $argv[6];
   $dirname = dirname($csvPath);
   if (!is_dir($dirname)) {
     mkdir($dirname, 0755, true);
   }
 
-  $header = ["Culture", "Raison Sociale", "SIRET", "CVI", "CDP", "Surface (Ha)", "Semences", "Biocontrôle", "Herbicides", "Insecticides acaricides", "Fongicides bactéricides", "Autres", "Total"];
+  $header = ["Culture", "Raison Sociale", "SIRET", "CVI", "CDP", "Surface (Ha)", "Semences", "Biocontrôle", "Herbicides", "Insecticides acaricides", "Fongicides bactéricides", "Autres", "Total", "Fichier origine"];
 
   $addHeader = !file_exists($csvPath);
   $csvOutput = fopen($csvPath, 'a');
@@ -38,7 +39,8 @@
       str_replace('.', ',', floatval($culture["bilanParSegment"]["insecticidesAcaricides"])),
       str_replace('.', ',', floatval($culture["bilanParSegment"]["fongicidesBactericides"])),
       str_replace('.', ',', floatval($culture["bilanParSegment"]["autres"])),
-      str_replace('.', ',', floatval($culture["bilanParSegment"]["total"]))
+      str_replace('.', ',', floatval($culture["bilanParSegment"]["total"])),
+      $fichier
       ],
       ';');
   }
