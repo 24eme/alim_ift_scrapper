@@ -33,20 +33,11 @@ if test "$QUERY" ; then
 
   curl_ret=$(curl -s $DB"/ETABLISSEMENT/_search?q=$QUERY+doc.statut:ACTIF" | jq -c '[.hits.hits[0]._source.doc.siret, .hits.hits[0]._source.doc.cvi, .hits.hits[0]._source.doc.identifiant, .hits.hits[0]._source.doc.raison_sociale]' | sed 's/,/ /g' | tr -d '"[]')
 
-  SIRET=$(echo $curl_ret | grep -Eo "^([0-9]{14})[^0-9]")
-  CVI=$(echo $curl_ret | grep -Eo "[^0-9]([0-9]{10})[^0-9]")
-  CDP=$(echo $curl_ret | grep -Eo "[^0-9]+(CDP[0-9]+)[^0-9]")
+  SIRET=$(echo $curl_ret | grep -Eo "^([0-9]{14})[^0-9]" || echo "-")
+  CVI=$(echo $curl_ret | grep -Eo "[^0-9]([0-9]{10})[^0-9]" || echo "-")
+  CDP=$(echo $curl_ret | grep -Eo "[^0-9]+(CDP[0-9]+)[^0-9]" || echo "-")
   RS=$(echo $curl_ret | cut -d' ' -f4-)
 
-  if test ! "$CVI" ; then
-    CVI='-'
-  fi
-  if test ! "$SIRET" ; then
-    SIRET='-'
-  fi
-  if test ! "$CDP" ; then
-    CDP='-'
-  fi
   if test ! "$RS" ; then
     RS='-'
   fi
