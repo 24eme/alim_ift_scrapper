@@ -12,7 +12,7 @@
     mkdir($dirname, 0755, true);
   }
 
-  $header = ["Raison Sociale", "SIRET", "CVI", "CDP", "Campagne", "Surface vigne (HA)", "Nom parcelle", "Surface parcelle", "Date traitement", "Culture", "Produit", "Numéro AMM", "Cible", "Dose Appliquée", "Dose de référence", "Pourcentage traité", "Volume de bouillie", "IFT", "Segment", "Observation", "Fichier origine"];
+  $header = ["Raison Sociale", "SIRET", "CVI", "CDP", "Campagne", "Surface vigne (HA)", "Nom parcelle", "Surface parcelle", "Date traitement", "Culture", "Produit", "Numéro AMM", "Cible", "Dose Appliquée", "Dose de référence", "Pourcentage traité", "Volume de bouillie", "IFT", "Segment", "Observation", "Date création", "Fichier origine"];
 
   $addHeader = !file_exists($csvPath);
   $csvOutput = fopen($csvPath, 'a');
@@ -52,6 +52,7 @@
         str_replace('.', ',', $traitement["ift"]),
         $traitement["segment"]["libelle"],
         $traitement["avertissement"]["libelle"],
+        $traitement["dateCreation"],
         $fichier
       ], ';');
     }
