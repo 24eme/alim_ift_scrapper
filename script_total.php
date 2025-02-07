@@ -12,7 +12,7 @@
     mkdir($dirname, 0755, true);
   }
 
-  $header = ["Culture", "Raison Sociale", "SIRET", "CVI", "CDP", "Surface (Ha)", "Semences", "Biocontrôle", "Herbicides", "Insecticides acaricides", "Fongicides bactéricides", "Autres", "Total", "Fichier origine"];
+  $header = ["Culture", "Raison Sociale", "SIRET", "CVI", "CDP", "Campagne", "Surface (Ha)", "Semences", "Biocontrôle", "Herbicides", "Insecticides acaricides", "Fongicides bactéricides", "Autres", "Total", "Fichier origine"];
 
   $addHeader = !file_exists($csvPath);
   $csvOutput = fopen($csvPath, 'a');
@@ -25,13 +25,14 @@
     fputcsv($csvOutput, $header, ';');
   }
 
+  $campagne = $bilanGroupes['campagne']['libelle'];
   foreach ($bilanGroupes["bilanGroupesCultures"] as $culture) {
     if ($culture["groupeCultures"]["libelle"] != "Vigne") {
       continue;
     }
 
     fputcsv($csvOutput, [
-      $culture["groupeCultures"]["libelle"], $raison_sociale, $siret, $cvi, $cdp,
+      $culture["groupeCultures"]["libelle"], $raison_sociale, $siret, $cvi, $cdp, $campagne,
       str_replace('.', ',', floatval($culture["bilanParSegment"]["surface"])),
       str_replace('.', ',', floatval($culture["bilanParSegment"]["semences"])),
       str_replace('.', ',', floatval($culture["bilanParSegment"]["biocontrole"])),

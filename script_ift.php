@@ -12,7 +12,7 @@
     mkdir($dirname, 0755, true);
   }
 
-  $header = ["Raison Sociale", "SIRET", "CVI", "CDP", "Surface vigne (HA)", "Nom parcelle", "Surface parcelle", "Date traitement", "Culture", "Produit", "Numéro AMM", "Cible", "Dose Appliquée", "Dose de référence", "Pourcentage traité", "Volume de bouillie", "IFT", "Segment", "Observation", "Fichier origine"];
+  $header = ["Raison Sociale", "SIRET", "CVI", "CDP", "Campagne", "Surface vigne (HA)", "Nom parcelle", "Surface parcelle", "Date traitement", "Culture", "Produit", "Numéro AMM", "Cible", "Dose Appliquée", "Dose de référence", "Pourcentage traité", "Volume de bouillie", "IFT", "Segment", "Observation", "Fichier origine"];
 
   $addHeader = !file_exists($csvPath);
   $csvOutput = fopen($csvPath, 'a');
@@ -27,7 +27,7 @@
 
   $parcellesCultivees = [];
   $surface_vigne = 0;
-
+  $campagne = $bilanParcelles['campagne']['libelle'];
   foreach ($bilanParcelles['bilanParcellesCultivees'] as $parcelle) {
     if ($parcelle["parcelleCultivee"]["culture"]["libelle"] != "Vigne") {
       continue;
@@ -40,7 +40,7 @@
     foreach ($parcelle['traitements'] as $traitement) {
       fputcsv($csvOutput,
       [
-        $raison_sociale, $siret, $cvi, $cdp, $surface_vigne,
+        $raison_sociale, $siret, $cvi, $cdp, $campagne, $surface_vigne,
         $parcelle['parcelle']['nom'],
         str_replace('.', ',', $parcelle['parcelle']['surface']),
         $traitement["dateTraitement"], $traitement["culture"]["libelle"],
