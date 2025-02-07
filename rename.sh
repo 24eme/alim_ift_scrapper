@@ -11,5 +11,5 @@ if [[ -z $SIRET || -z $CVI ]]
 then
   mv $PDF $(dirname $PDF)'/incorrect/'$FILE
 else
-  mv $PDF $(dirname $PDF)'/'$SIRET'_'$CVI'_'$RAISON_SOCIALE'_'$CDP'?'$FILE
+  mv $PDF $(dirname $PDF)'/'$FILE'_'$SIRET'_'$CVI'_'$CDP
 fi
