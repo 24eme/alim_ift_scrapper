@@ -49,6 +49,10 @@ mkdir $DIRNAME_TMP_IFT 2> /dev/null
 
 CLE=$(strings "$PDF" | grep https | sed 's/.*https/https/' | sed 's/).*//' | grep verifier-bilan-ift | cut -d '/' -f 6)
 
+if ! test $CLE; then
+	echo "ERROR: $PDF: Clé non trouvée" >&2
+	exit 2
+fi
 curl -s "https://alim.api.agriculture.gouv.fr/ift/v5/api/ift/bilan/verifier/$CLE" > $JSON_FILE
 
 php script_ift.php $JSON_FILE $SIRET $CVI $CDP "$RS" "$(basename $PDF)" 2> /dev/null
