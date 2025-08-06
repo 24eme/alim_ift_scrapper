@@ -1,6 +1,6 @@
 #!bin/bash
+. config.inc
 
-DB=$1
 PDF="$2"
 
 ADRESSE=$(echo $DB)"/ETABLISSEMENT/_search?q="
@@ -40,4 +40,8 @@ CDP_MATCH=$(echo $curl_ret | jq -c '[.hits.hits[0]._source.doc.identifiant]' | t
 MATCH=$(echo $RS_MATCH $SIRET_MATCH $CVI_MATCH $CDP_MATCH | tr -d '"[]')
 SCORE=$(echo $curl_ret | jq '.hits.hits[0]._score')
 
-echo $SCORE $(echo $(basename "$PDF")) $(echo $(basename "$PDF") | sed 's/.pdf//g')'_'$SIRET_MATCH'_'$CVI_MATCH'_'$CDP_MATCH'.pdf' $FILE
+NEWFILENAME=$(echo $(basename "$PDF") | sed 's/.pdf//g')'_'$SIRET_MATCH'_'$CVI_MATCH'_'$CDP_MATCH'.pdf'
+
+echo $SCORE $(echo $(basename "$PDF")) $NEWFILENAME $FILE
+
+mv $PDF $(dirname "$PDF")/$NEWFILENAME

@@ -1,7 +1,7 @@
 #!/bin/bash
+. config.inc
 
-DB=$1
-PDF=$2
+PDF=$1
 
 MATCHSIRET=$(echo $(basename "$PDF") | grep -Eo "[^0-9]([0-9]{14})[^0-9]" | grep -Eo "[0-9]{14}")
 MATCHCVI=$(echo $(basename "$PDF") | grep -Eo "[^0-9]([0-9X]{10})[^0-9]" | grep -Eo "[0-9X]{10}")
@@ -53,7 +53,7 @@ if ! test $CLE; then
 	echo "ERROR: $PDF: Clé non trouvée" >&2
 	exit 2
 fi
-curl -s "https://alim.api.agriculture.gouv.fr/ift/v5/api/ift/bilan/verifier/$CLE" > $JSON_FILE
+curl -s "$API/$CLE" > $JSON_FILE
 
 php script_ift.php $JSON_FILE $SIRET $CVI $CDP "$RS" "$(basename $PDF)" 2> /dev/null
 php script_total.php $JSON_FILE $SIRET $CVI $CDP "$RS" "$(basename $PDF)" 2> /dev/null
