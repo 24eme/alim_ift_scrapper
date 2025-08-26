@@ -59,6 +59,25 @@ mkdir -p $DIRNAME_TMP_IFT
 CLE=$(strings "$PDF" | grep https | sed 's/.*https/https/' | sed 's/).*//' | grep verifier-bilan-ift | tail -n 1 | sed 's/.*verifier-bilan-ift\///')
 
 if ! test $CLE; then
+    echo "WARN: $PDF: Clé non trouvée: on tente la lecture du QRCode avec zbarimg" >&2
+    if ! which pdftohtml > /dev/null ; then
+        echo "ERR: pdftohtml missing" 1>&2
+        exit 4;
+    fi
+    if ! which zbarimg > /dev/null ; then
+        echo "ERR: zbarimg missing" 1>&2
+        exit 5;
+    fi
+    rm -rf .tmp/html
+    mkdir -p .tmp/html
+    cd .tmp/html
+    pdftohtml ../../$PDF test > /dev/null
+    touch test_tmp.jpg test_tmp.png
+    CLE=$(ls test*jpg test*png | while read img ; do zbarimg $img ; done 2>&1  | grep QR-C | sed 's/QR-Code://' | grep verifier-bilan-ift | tail -n 1  | sed 's/.*verifier-bilan-ift\///' )
+    cd ../..
+    rm -rf .tmp/html
+fi
+if ! test $CLE; then
 	echo "ERROR: $PDF: Clé non trouvée" >&2
 	exit 2
 fi
