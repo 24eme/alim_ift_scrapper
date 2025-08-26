@@ -1,1 +1,4 @@
-DB=adresse_base_de_donnees
+DB=http://127.0.0.1:9200/openodg/
+API=https://alim.api.agriculture.gouv.fr/ift/v5/api/ift/bilan/verifier
+EXPORT_DIR=exports
+CACHE_DIR=.cache

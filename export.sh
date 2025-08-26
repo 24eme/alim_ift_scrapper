@@ -31,7 +31,16 @@ RS="-"
 
 if test "$QUERY" ; then
 
-  curl_ret=$(curl -s $DB"/ETABLISSEMENT/_search?q=$QUERY+doc.statut:ACTIF" | jq -c '[.hits.hits[0]._source.doc.siret, .hits.hits[0]._source.doc.cvi, .hits.hits[0]._source.doc.identifiant, .hits.hits[0]._source.doc.raison_sociale]' | sed 's/,/ /g' | tr -d '"[]')
+  SEARCH_RES_CMD="curl -s $DB/ETABLISSEMENT/_search?q=$QUERY+doc.statut:ACTIF"
+  if test "$CACHE_DIR"; then
+      mkdir -p $CACHE_DIR"/el/"
+      CACHE_FILE=$CACHE_DIR"/el/"$(echo "$QUERY" | md5sum | sed 's/ .*//')".json";
+      if ! test -s $CACHE_FILE; then
+        $SEARCH_RES_CMD > $CACHE_FILE
+      fi
+      SEARCH_RES_CMD="cat "$CACHE_FILE
+  fi
+  curl_ret=$( $SEARCH_RES_CMD | jq -c '[.hits.hits[0]._source.doc.siret, .hits.hits[0]._source.doc.cvi, .hits.hits[0]._source.doc.identifiant, .hits.hits[0]._source.doc.raison_sociale]' | sed 's/,/ /g' | tr -d '"[]')
 
   SIRET=$(echo $curl_ret | grep -Eo "^([0-9]{14})[^0-9]" || echo "-")
   CVI=$(echo $curl_ret | grep -Eo "[^0-9]([0-9X]{10})[^0-9]" || echo "-")
@@ -44,16 +53,28 @@ if test "$QUERY" ; then
 fi
 
 DIRNAME_TMP_IFT=/tmp/json_ift
-JSON_FILE=$DIRNAME_TMP_IFT/$(echo $(basename $PDF) | cut -d'.' -f1)".json"
-mkdir $DIRNAME_TMP_IFT 2> /dev/null
+JSON_FILE=$DIRNAME_TMP_IFT/$(echo $(basename "$PDF") | cut -d'.' -f1)".json"
+mkdir -p $DIRNAME_TMP_IFT
 
-CLE=$(strings "$PDF" | grep https | sed 's/.*https/https/' | sed 's/).*//' | grep verifier-bilan-ift | cut -d '/' -f 6)
+CLE=$(strings "$PDF" | grep https | sed 's/.*https/https/' | sed 's/).*//' | grep verifier-bilan-ift | tail -n 1 | sed 's/.*verifier-bilan-ift\///')
 
 if ! test $CLE; then
 	echo "ERROR: $PDF: Clé non trouvée" >&2
 	exit 2
 fi
-curl -s "$API/$CLE" > $JSON_FILE
+if test $CACHE_DIR ; then
+   mkdir -p $CACHE_DIR
+   if ! test -s $CACHE_DIR"/"$CLE; then
+      curl -s "$API/$CLE" > $CACHE_DIR"/"$CLE
+   fi
+   JSON_FILE=$CACHE_DIR"/"$CLE
+else
+   curl -s "$API/$CLE" > "$JSON_FILE"
+fi
 
-php script_ift.php $JSON_FILE $SIRET $CVI $CDP "$RS" "$(basename $PDF)" 2> /dev/null
-php script_total.php $JSON_FILE $SIRET $CVI $CDP "$RS" "$(basename $PDF)" 2> /dev/null
+if ! test -s "$JSON_FILE"; then
+   echo "ERROR: unable to generate $JSON_FILE from $API/$CLE" >&2;
+   exit 3
+fi
+php script_ift.php "$JSON_FILE" $SIRET $CVI $CDP "$RS" "$(basename "$PDF")" $EXPORT_DIR
+php script_total.php "$JSON_FILE" $SIRET $CVI $CDP "$RS" "$(basename "$PDF")" $EXPORT_DIR

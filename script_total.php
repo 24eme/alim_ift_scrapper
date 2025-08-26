@@ -1,12 +1,17 @@
 <?php
 
   $bilanGroupes = json_decode(file_get_contents($argv[1]), true);
-  $csvPath ='./export_total.csv';
   $siret = $argv[2];
   $cvi = $argv[3];
   $cdp = $argv[4];
   $raison_sociale = $argv[5];
   $fichier = $argv[6];
+  $export_dir = '.';
+  if (isset($argv[7])) {
+    $export_dir = $argv[7];
+  }
+  $csvPath = $export_dir.'/export_total.csv';
+
   $dirname = dirname($csvPath);
   if (!is_dir($dirname)) {
     mkdir($dirname, 0755, true);
@@ -23,6 +28,11 @@
 
   if ($addHeader) {
     fputcsv($csvOutput, $header, ';');
+  }
+
+  if (!isset($bilanGroupes['campagne']['libelle']) || !isset($bilanGroupes['bilanGroupesCultures'])) {
+       echo "ERR: campagne or bilanGroupesCultures missing in ".$fichier."\n";
+        exit(1);
   }
 
   $campagne = $bilanGroupes['campagne']['libelle'];
