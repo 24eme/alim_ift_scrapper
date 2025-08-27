@@ -1,6 +1,10 @@
 <?php
 
   $bilanGroupes = json_decode(file_get_contents($argv[1]), true);
+  if (!$bilanGroupes) {
+    echo "ERROR: corrupted json ".$argv[1]."\n";
+    exit(1);
+  }
   $siret = $argv[2];
   $cvi = $argv[3];
   $cdp = $argv[4];
