@@ -95,5 +95,5 @@ if ! test -s "$JSON_FILE"; then
    echo "ERROR: unable to generate $JSON_FILE from $API/$CLE" >&2;
    exit 3
 fi
-php script_ift.php "$JSON_FILE" $SIRET $CVI $CDP "$RS" "$(basename "$PDF")" $EXPORT_DIR
-php script_total.php "$JSON_FILE" $SIRET $CVI $CDP "$RS" "$(basename "$PDF")" $EXPORT_DIR
+php script_ift.php "$JSON_FILE" $SIRET $CVI "$CDP" "$RS" "$(basename "$PDF")" $EXPORT_DIR
+php script_total.php "$JSON_FILE" $SIRET $CVI "$CDP" "$RS" "$(basename "$PDF")" $EXPORT_DIR
